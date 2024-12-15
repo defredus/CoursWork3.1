@@ -23,6 +23,7 @@ namespace BLL
             services.AddTransient<IServiceService, ServiceService>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IAdminService, AdminService>();
+            services.AddTransient<IManagerService, ManagerService>();
         }
     }
 }

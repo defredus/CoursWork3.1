@@ -36,7 +36,8 @@ namespace CoursWorkUI
                     provider.GetRequiredService<IClientService>(),
                     provider.GetRequiredService<IServiceService>(),
                     provider.GetRequiredService<IPaymentService>(),
-                    provider.GetRequiredService<IAdminService>()
+                    provider.GetRequiredService<IAdminService>(),
+                    provider.GetRequiredService<IManagerService>()
                     );
             });
         }

@@ -28,6 +28,7 @@ namespace DAL
                     services.AddScoped<IServiceRepository, SqlServiceRepository>(repo => new SqlServiceRepository(connection));
                     services.AddScoped<IPaymentRepository, SqlPaymentRepository>(repo => new SqlPaymentRepository(connection));
                     services.AddScoped<IAdminRepository, SqlAdminRepository>(repo => new SqlAdminRepository(connection));
+                    services.AddScoped<IManagerRepository, SqlManagerRepository>(repo => new SqlManagerRepository(connection));
                     break;
 
                 default:
