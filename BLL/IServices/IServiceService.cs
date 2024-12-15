@@ -10,6 +10,6 @@ namespace BLL.IServices
     public interface IServiceService
     {
         void GetAll();
-        void AddNewServiceToClient(int id);
+        void AddNewServiceToClient(string id);
     }
 }

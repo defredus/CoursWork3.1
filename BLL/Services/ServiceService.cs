@@ -27,7 +27,7 @@ namespace BLL.Services
             Console.WriteLine("---------------------------------------------------------------------------------------------------------------------");
 
         }
-        public void AddNewServiceToClient(int id)
+        public void AddNewServiceToClient(string id)
         {
             Console.Write("Введите название сервиса на добавление --> ");
             string service = Console.ReadLine();

@@ -15,7 +15,7 @@ namespace DAL.Interfaces
         void Add(Service service);
         void Update(Service service);
         void Delete(int id);
-        void AddNewServiceToClient(int id, string service);
+        void AddNewServiceToClient(string id, string service);
     }
 
 }

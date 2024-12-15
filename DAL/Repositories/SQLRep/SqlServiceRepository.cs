@@ -65,7 +65,7 @@ namespace DAL.Repositories.SQLRep
             return services;
         }
 
-        public void AddNewServiceToClient(int id, string service)
+        public void AddNewServiceToClient(string id, string service)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {

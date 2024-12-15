@@ -30,14 +30,14 @@ namespace BLL.Services
             IEnumerable<Payment> payments = _paymentRepository.GetAll();
 
             // Подписи столбцов
-            Console.WriteLine("-------------------------------------------------------");
-            Console.WriteLine("|   ID   | ClientID | TypeID |   Amount   |   Date    |");
-            Console.WriteLine("-------------------------------------------------------");
+            Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("|      ID                  |    ClientID              |    TypeID               |    Amount   |      Date    |");
+            Console.WriteLine("--------------------------------------------------------------------------------------------------------------");
 
             // Данные в строках
             foreach (var payment in payments)
             {
-                Console.WriteLine($"| {payment.Id,6} | {payment.ClientId,8} | {payment.PaymentTypeId,6} | {payment.Amount,10} | {payment.PaymentDate:yyyy-MM-dd} |");
+                Console.WriteLine($"| {payment.MongoId,6} | {payment.MongoClientId,8} | {payment.MongoPaymentTypeId,6} | {payment.Amount,10} | {payment.PaymentDate:yyyy-MM-dd} |");
             }
 
             Console.WriteLine("-------------------------------------------------------");

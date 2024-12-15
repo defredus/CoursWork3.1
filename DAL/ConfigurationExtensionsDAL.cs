@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using DAL.Repositories.SQLRep;
+using DAL.Repositories.MongoRep;
 
 namespace DAL
 {
@@ -20,6 +21,10 @@ namespace DAL
                 case "MONGO":
                     // Регистрация MongoDB репозитория
                     services.AddScoped<IClientRepository, MongoDbClientRepository>(repo => new MongoDbClientRepository(connection));
+                    services.AddScoped<IServiceRepository, MongoDbServiceRepository>(repo => new MongoDbServiceRepository(connection));
+                    services.AddScoped<IPaymentRepository, MongoDbPaymentRepository>(repo => new MongoDbPaymentRepository(connection));
+                    services.AddScoped<IAdminRepository, MongoDbAdminRepository>(repo => new MongoDbAdminRepository(connection));
+                    services.AddScoped<IManagerRepository, MongoDbManagerRepository>(repo => new MongoDbManagerRepository(connection));
                     break;
 
                 case "SQL":

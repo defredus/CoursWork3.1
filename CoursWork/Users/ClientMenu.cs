@@ -51,7 +51,7 @@ namespace CoursWorkUI.Users
                     case "3":
                         Console.Clear();
                         _serviceStorage.serviceService.GetAll();
-                        _serviceStorage.serviceService.AddNewServiceToClient(Convert.ToInt32(_id));
+                        _serviceStorage.serviceService.AddNewServiceToClient(_id);
                         Utils.WaitUser();
                         break;
                     case "4":
