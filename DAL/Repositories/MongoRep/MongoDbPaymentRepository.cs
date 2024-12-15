@@ -22,16 +22,114 @@ namespace DAL.Repositories.MongoRep
             _payment = database.GetCollection<Payment>("Payments");
             _client = database.GetCollection<Client>("Clients");
         }
+
+        // Добавление нового платежа
         public void Add(Payment payment)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Вставляем новый платеж в коллекцию Payments
+                _payment.InsertOne(payment);
+                Console.WriteLine($"Платеж на сумму {payment.Amount} успешно добавлен.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при добавлении платежа: {ex.Message}");
+            }
         }
 
+        // Удаление платежа по ID
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Преобразуем ID в ObjectId
+                var objectId = new ObjectId(id.ToString());
+
+                // Удаляем платеж из коллекции
+                var result = _payment.DeleteOne(payment => payment.MongoId == objectId);
+
+                if (result.DeletedCount > 0)
+                {
+                    Console.WriteLine($"Платеж с ID {id} был успешно удален.");
+                }
+                else
+                {
+                    Console.WriteLine($"Платеж с ID {id} не найден.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при удалении платежа: {ex.Message}");
+            }
         }
 
+        // Получение платежа по ID
+        public Payment GetById(int id)
+        {
+            try
+            {
+                // Преобразуем ID в ObjectId
+                var objectId = new ObjectId(id.ToString());
+
+                // Ищем платеж по MongoId
+                var payment = _payment.Find(p => p.MongoId == objectId).FirstOrDefault();
+
+                if (payment != null)
+                {
+                    return new Payment
+                    {
+                        MongoId = payment.MongoId,
+                        MongoClientId = payment.MongoClientId,
+                        MongoPaymentTypeId = payment.MongoPaymentTypeId,
+                        Amount = payment.Amount,
+                        PaymentDate = payment.PaymentDate
+                    };
+                }
+                else
+                {
+                    Console.WriteLine($"Платеж с ID {id} не найден.");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении платежа: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Обновление платежа
+        public void Update(Payment payment)
+        {
+            try
+            {
+                // Формируем обновление платежа
+                var updateDefinition = Builders<Payment>.Update
+                    .Set(p => p.MongoClientId, payment.MongoClientId)
+                    .Set(p => p.MongoPaymentTypeId, payment.MongoPaymentTypeId)
+                    .Set(p => p.Amount, payment.Amount)
+                    .Set(p => p.PaymentDate, payment.PaymentDate);
+
+                // Преобразуем MongoId в ObjectId
+                var result = _payment.UpdateOne(p => p.MongoId == payment.MongoId, updateDefinition);
+
+                if (result.ModifiedCount > 0)
+                {
+                    Console.WriteLine($"Платеж с ID {payment.MongoId} был успешно обновлен.");
+                }
+                else
+                {
+                    Console.WriteLine($"Платеж с ID {payment.MongoId} не найден.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обновлении платежа: {ex.Message}");
+            }
+        }
+
+        // Получение всех платежей
         public IEnumerable<Payment> GetAll()
         {
             try
@@ -63,12 +161,7 @@ namespace DAL.Repositories.MongoRep
             }
         }
 
-
-        public Payment GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
+        // Пополнение баланса клиента
         public void ReplenishBalance(string id, decimal sum)
         {
             // Преобразуем строковый ID в ObjectId
@@ -111,13 +204,6 @@ namespace DAL.Repositories.MongoRep
             {
                 Console.WriteLine("Ошибка: " + ex.Message);
             }
-        }
-
-
-
-        public void Update(Payment payment)
-        {
-            throw new NotImplementedException();
         }
     }
 }

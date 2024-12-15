@@ -12,7 +12,6 @@ namespace DAL.Repositories.MongoRep
 {
     public class MongoDbServiceRepository : IServiceRepository
     {
-        private readonly MongoClient _mongoClient;
         private readonly IMongoCollection<Service> _services;
         private readonly IMongoCollection<Client> _clients;
         private readonly IMongoCollection<SalesVolume> _salesVolume;
@@ -26,10 +25,6 @@ namespace DAL.Repositories.MongoRep
             _clients = database.GetCollection<Client>("Clients");
             _serviceFacts = database.GetCollection<ServiceFact>("ServiceFacts");
             _salesVolume = database.GetCollection<SalesVolume>("SalesVolumes");
-        }
-        public void Add(Service service)
-        {
-            throw new NotImplementedException();
         }
 
         public void AddNewServiceToClient(string id, string service)
@@ -106,15 +101,6 @@ namespace DAL.Repositories.MongoRep
                 Console.WriteLine($"Ошибка: {ex.Message}");
             }
         }
-
-
-
-
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<Service> GetAll()
         {
             try
@@ -131,15 +117,117 @@ namespace DAL.Repositories.MongoRep
                 return new List<Service>(); // Возвращаем пустой список в случае ошибки
             }
         }
+        public void Add(Service service)
+        {
+            try
+            {
+                // Проверяем, существует ли уже сервис с таким названием
+                var existingService = _services.Find(s => s.Name == service.Name).FirstOrDefault();
+                if (existingService != null)
+                {
+                    Console.WriteLine("Сервис с таким названием уже существует.");
+                    return;
+                }
+
+                // Вставляем новый сервис в коллекцию
+                _services.InsertOne(service);
+                Console.WriteLine($"Сервис '{service.Name}' успешно добавлен.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при добавлении сервиса: {ex.Message}");
+            }
+        }
+
+        public void Delete(int id)
+        {
+            try
+            {
+                // Преобразуем ID в ObjectId
+                var objectId = new ObjectId(id.ToString());
+
+                // Удаляем сервис по ID
+                var result = _services.DeleteOne(s => s.MongoServiceId == objectId);
+
+                if (result.DeletedCount > 0)
+                {
+                    Console.WriteLine("Сервис успешно удален.");
+                }
+                else
+                {
+                    Console.WriteLine("Сервис с таким ID не найден.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при удалении сервиса: {ex.Message}");
+            }
+        }
 
         public Service GetById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Преобразуем ID в ObjectId
+                var objectId = new ObjectId(id.ToString());
+
+                // Ищем сервис по ID
+                var service = _services.Find(s => s.MongoServiceId == objectId).FirstOrDefault();
+
+                if (service == null)
+                {
+                    Console.WriteLine("Сервис с таким ID не найден.");
+                    return null;
+                }
+
+                return service;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении сервиса по ID: {ex.Message}");
+                return null;
+            }
         }
 
         public void Update(Service service)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Преобразуем ID в ObjectId
+                var objectId = new ObjectId(service.MongoServiceId.ToString());
+
+                // Ищем существующий сервис для обновления
+                var existingService = _services.Find(s => s.MongoServiceId == objectId).FirstOrDefault();
+
+                if (existingService == null)
+                {
+                    Console.WriteLine("Сервис с таким ID не найден.");
+                    return;
+                }
+
+                // Обновляем данные сервиса
+                var update = Builders<Service>.Update
+                    .Set(s => s.Name, service.Name)
+                    .Set(s => s.Price, service.Price)
+                    .Set(s => s.Description, service.Description);
+
+                // Выполняем обновление
+                var result = _services.UpdateOne(s => s.MongoServiceId == objectId, update);
+
+                if (result.ModifiedCount > 0)
+                {
+                    Console.WriteLine("Сервис успешно обновлен.");
+                }
+                else
+                {
+                    Console.WriteLine("Не удалось обновить сервис.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при обновлении сервиса: {ex.Message}");
+            }
         }
+
     }
 }

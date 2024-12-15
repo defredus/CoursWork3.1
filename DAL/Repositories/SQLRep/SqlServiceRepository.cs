@@ -18,14 +18,55 @@ namespace DAL.Repositories.SQLRep
         {
             _connectionString = connectionString;
         }
+
         public void Add(Service service)
         {
-            throw new NotImplementedException();
+            const string query = "INSERT INTO Services (name, description, price) VALUES (@name, @description, @price);";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@name", service.Name);
+                    command.Parameters.AddWithValue("@description", service.Description);
+                    command.Parameters.AddWithValue("@price", service.Price);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Service added successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+            }
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            const string query = "DELETE FROM Services WHERE id = @id;";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Service deleted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+            }
         }
 
         public IEnumerable<Service> GetAll()
@@ -65,13 +106,81 @@ namespace DAL.Repositories.SQLRep
             return services;
         }
 
+        public Service GetById(int id)
+        {
+            const string query = "SELECT id, name, description, price FROM Services WHERE id = @id;";
+            Service service = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    try
+                    {
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                service = new Service
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                    Name = reader.GetString(reader.GetOrdinal("name")),
+                                    Description = reader.GetString(reader.GetOrdinal("description")),
+                                    Price = reader.GetDecimal(reader.GetOrdinal("price"))
+                                };
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+            }
+
+            return service;
+        }
+
+        public void Update(Service service)
+        {
+            const string query = @"
+                UPDATE Services 
+                SET name = @name, description = @description, price = @price 
+                WHERE id = @id;";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", service.Id);
+                    command.Parameters.AddWithValue("@name", service.Name);
+                    command.Parameters.AddWithValue("@description", service.Description);
+                    command.Parameters.AddWithValue("@price", service.Price);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Service updated successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+            }
+        }
+
         public void AddNewServiceToClient(string id, string service)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                // Шаг 1: Получить id и price сервиса
+                // Step 1: Get service id and price
                 int serviceId;
                 decimal servicePrice;
 
@@ -84,7 +193,7 @@ namespace DAL.Repositories.SQLRep
                     {
                         if (!reader.Read())
                         {
-                            throw new Exception("Сервис с указанным именем не найден.");
+                            throw new Exception("Service with the specified name not found.");
                         }
 
                         serviceId = reader.GetInt32(0);
@@ -92,7 +201,7 @@ namespace DAL.Repositories.SQLRep
                     }
                 }
 
-                // Шаг 2: Проверить баланс клиента
+                // Step 2: Check client balance
                 decimal clientBalance;
 
                 using (SqlCommand getClientBalanceCommand = new SqlCommand(
@@ -104,7 +213,8 @@ namespace DAL.Repositories.SQLRep
 
                     if (result == null)
                     {
-                        Console.WriteLine("Клиент с указанным ID не найден.");
+                        Console.WriteLine("Client with the specified ID not found.");
+                        return;
                     }
 
                     clientBalance = Convert.ToDecimal(result);
@@ -112,11 +222,11 @@ namespace DAL.Repositories.SQLRep
 
                 if (clientBalance < servicePrice)
                 {
-                    Console.WriteLine("Недостаточно средств на балансе клиента.");
+                    Console.WriteLine("Insufficient funds on the client's balance.");
                     return;
                 }
 
-                // Шаг 3: Проверить, существует ли запись в ServiceFacts
+                // Step 3: Check if record exists in ServiceFacts
                 using (SqlCommand checkServiceFactCommand = new SqlCommand(
                     "SELECT COUNT(*) FROM ServiceFacts WHERE client_id = @clientId AND service_id = @serviceId", connection))
                 {
@@ -127,17 +237,17 @@ namespace DAL.Repositories.SQLRep
 
                     if (existingRecords > 0)
                     {
-                        Console.WriteLine("У вас уже подключенна данная услуга");
+                        Console.WriteLine("This service is already connected to the client.");
                         return;
                     }
                 }
 
-                // Шаг 4: Добавить запись в ServiceFacts и обновить баланс клиента
+                // Step 4: Add record to ServiceFacts and update client balance
                 using (SqlTransaction transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        // Добавление записи в ServiceFacts
+                        // Insert ServiceFact record
                         using (SqlCommand insertServiceFactCommand = new SqlCommand(
                             "INSERT INTO ServiceFacts (client_id, service_id, start_date, end_date, quantity) " +
                             "VALUES (@clientId, @serviceId, @startDate, @endDate, @quantity)", connection, transaction))
@@ -154,7 +264,7 @@ namespace DAL.Repositories.SQLRep
                             insertServiceFactCommand.ExecuteNonQuery();
                         }
 
-                        // Обновление баланса клиента
+                        // Update client balance
                         using (SqlCommand updateClientBalanceCommand = new SqlCommand(
                             "UPDATE Clients SET balance = balance - @servicePrice WHERE id = @clientId", connection, transaction))
                         {
@@ -164,7 +274,7 @@ namespace DAL.Repositories.SQLRep
                             updateClientBalanceCommand.ExecuteNonQuery();
                         }
 
-                        // Шаг 5: Обновить количество проданных услуг в SalesVolumes
+                        // Step 5: Update sales volume in SalesVolumes
                         using (SqlCommand updateSalesVolumeCommand = new SqlCommand(
                             "UPDATE SalesVolumes SET quantity_sold = quantity_sold + @quantitySold WHERE service_id = @serviceId", connection, transaction))
                         {
@@ -184,16 +294,5 @@ namespace DAL.Repositories.SQLRep
                 }
             }
         }
- 
-        public Service GetById(int id)
-            {
-            throw new NotImplementedException();
-            }
-
-        public void Update(Service service)
-            {
-            throw new NotImplementedException();
-            }
-
     }
 }

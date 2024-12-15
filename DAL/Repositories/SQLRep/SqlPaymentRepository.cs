@@ -1,12 +1,8 @@
 ﻿using DAL.Interfaces;
 using DAL.Models;
 using Microsoft.Data.SqlClient;
-using MongoDB.Driver.Core.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DAL.Repositories.SQLRep
 {
@@ -53,14 +49,59 @@ namespace DAL.Repositories.SQLRep
                 }
             }
         }
+
         public void Add(Payment payment)
         {
-            throw new NotImplementedException();
+            string query = @"
+                                INSERT INTO Payments (client_id, payment_type_id, amount, payment_date)
+                                VALUES (@clientId, @paymentTypeId, @amount, @paymentDate)
+                            ";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@clientId", payment.ClientId);
+                    command.Parameters.AddWithValue("@paymentTypeId", payment.PaymentTypeId);
+                    command.Parameters.AddWithValue("@amount", payment.Amount);
+                    command.Parameters.AddWithValue("@paymentDate", payment.PaymentDate);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Платеж успешно добавлен.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при добавлении платежа: " + ex.Message);
+                    }
+                }
+            }
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            string query = "DELETE FROM Payments WHERE id = @id";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Платеж удален.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при удалении платежа: " + ex.Message);
+                    }
+                }
+            }
         }
 
         public IEnumerable<Payment> GetAll()
@@ -74,7 +115,7 @@ namespace DAL.Repositories.SQLRep
                     connection.Open();
 
                     string query = @"SELECT [id], [client_id], [payment_type_id], [amount], [payment_date] 
-                                 FROM [CoursWorkKt].[dbo].[Payments]";
+                                     FROM [CoursWorkKt].[dbo].[Payments]";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -103,14 +144,76 @@ namespace DAL.Repositories.SQLRep
 
             return payments;
         }
+
         public Payment GetById(int id)
         {
-            throw new NotImplementedException();
+            string query = "SELECT [id], [client_id], [payment_type_id], [amount], [payment_date] FROM Payments WHERE id = @id";
+            Payment payment = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    try
+                    {
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                payment = new Payment
+                                {
+                                    Id = reader.GetInt32(0),
+                                    ClientId = reader.GetInt32(1),
+                                    PaymentTypeId = reader.GetInt32(2),
+                                    Amount = reader.GetDecimal(3),
+                                    PaymentDate = reader.GetDateTime(4)
+                                };
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при получении платежа: " + ex.Message);
+                    }
+                }
+            }
+
+            return payment;
         }
 
         public void Update(Payment payment)
         {
-            throw new NotImplementedException();
+            string query = @"
+                                UPDATE Payments
+                                SET client_id = @clientId, payment_type_id = @paymentTypeId, amount = @amount, payment_date = @paymentDate
+                                WHERE id = @id
+                            ";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", payment.Id);
+                    command.Parameters.AddWithValue("@clientId", payment.ClientId);
+                    command.Parameters.AddWithValue("@paymentTypeId", payment.PaymentTypeId);
+                    command.Parameters.AddWithValue("@amount", payment.Amount);
+                    command.Parameters.AddWithValue("@paymentDate", payment.PaymentDate);
+
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Платеж обновлен.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при обновлении платежа: " + ex.Message);
+                    }
+                }
+            }
         }
     }
 }

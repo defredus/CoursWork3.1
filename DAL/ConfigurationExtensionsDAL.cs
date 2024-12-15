@@ -24,6 +24,9 @@ namespace DAL
                     services.AddScoped<IServiceRepository, MongoDbServiceRepository>(repo => new MongoDbServiceRepository(connection));
                     services.AddScoped<IPaymentRepository, MongoDbPaymentRepository>(repo => new MongoDbPaymentRepository(connection));
                     services.AddScoped<IAdminRepository, MongoDbAdminRepository>(repo => new MongoDbAdminRepository(connection));
+                    services.AddScoped<IServiceFactRepository, MongoServiceFactRepository>(repo => new MongoServiceFactRepository(connection));
+                    services.AddScoped<IPriceListRepository, MongoPriceListRepository>(repo => new MongoPriceListRepository(connection));
+                    services.AddScoped<ISalesVolumeRepository, MongoSalesVolumeRepository>(repo => new MongoSalesVolumeRepository(connection));
                     services.AddScoped<IManagerRepository, MongoDbManagerRepository>(repo => new MongoDbManagerRepository(connection));
                     break;
 
@@ -33,6 +36,9 @@ namespace DAL
                     services.AddScoped<IServiceRepository, SqlServiceRepository>(repo => new SqlServiceRepository(connection));
                     services.AddScoped<IPaymentRepository, SqlPaymentRepository>(repo => new SqlPaymentRepository(connection));
                     services.AddScoped<IAdminRepository, SqlAdminRepository>(repo => new SqlAdminRepository(connection));
+                    services.AddScoped<IServiceFactRepository, SqlServiceFactRepository>(repo => new SqlServiceFactRepository(connection));
+                    services.AddScoped<IPriceListRepository, SqlPriceListRepository>(repo => new SqlPriceListRepository(connection));
+                    services.AddScoped<ISalesVolumeRepository, SqlSalesVolumeRepository>(repo => new SqlSalesVolumeRepository(connection));
                     services.AddScoped<IManagerRepository, SqlManagerRepository>(repo => new SqlManagerRepository(connection));
                     break;
 
