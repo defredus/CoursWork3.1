@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoursWorkUI.Interfaces;
-using SharpCompress.Common;
+﻿using CoursWorkUI.Interfaces;
+
 
 namespace CoursWorkUI.Users
 {

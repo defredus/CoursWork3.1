@@ -16,7 +16,7 @@ public class ClientService : IClientService
 
     public void GetDataOfClient(string id)
     {
-        Console.Clear();
+        //Console.Clear();
         (string? name, string? address, string? phone, string? email, string? balance) = _clientRepository.GetDataOfClient(id);
         Console.WriteLine("Имя пользователя:" + name);
         Console.WriteLine("Адресс: "+ address);

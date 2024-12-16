@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoursWorkUI", "CoursWork\CoursWorkUI.csproj", "{EE086BF6-12AC-4610-8305-C2024EBF74A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoursWorkUI", "CoursWork\CoursWorkUI.csproj", "{EE086BF6-12AC-4610-8305-C2024EBF74A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{F170F5E1-5F25-4A9A-888E-943B0F0AA6FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{F170F5E1-5F25-4A9A-888E-943B0F0AA6FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{14EF97F9-F483-493D-95C8-A6B1BC809959}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{14EF97F9-F483-493D-95C8-A6B1BC809959}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoursWorkTests", "CoursWorkTests\CoursWorkTests.csproj", "{23A74084-310D-4572-B473-CA4D859A650E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{14EF97F9-F483-493D-95C8-A6B1BC809959}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14EF97F9-F483-493D-95C8-A6B1BC809959}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14EF97F9-F483-493D-95C8-A6B1BC809959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23A74084-310D-4572-B473-CA4D859A650E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A74084-310D-4572-B473-CA4D859A650E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A74084-310D-4572-B473-CA4D859A650E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A74084-310D-4572-B473-CA4D859A650E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
